@@ -1,27 +1,44 @@
 import { ICommand } from '../interfaces/ICommand';
-import { AddExpletive } from '../commands/AddExpletive';
+import { AddExpletive, RemoveExpletive, Leaderboard, Backscan } from '../commands/commands';
 import { Client } from 'discord.js';
 export class CommandParser{
-
-    private _client;
-
-    CommandParser(client: Client){
-        this._client = client;
-    }
     
-    static parseCommand(): ICommand{
+    static parseCommand(client: Client, command: string): ICommand{
+        return this.getCommand(client, command);
+    }
+
+    private static getCommand(client: Client, command: string): ICommand{
+        let commandVal = Commands[command.toLocaleUpperCase()];
+        console.log("Parsed command value: " + commandVal);
+        if(commandVal != undefined){
+            return this.initCommand(client, commandVal);
+        }
+
         return null;
     }
 
+    private static initCommand(client: Client, commandVal: number): ICommand{
+        switch(commandVal){
+            case Commands.ADD.valueOf():
+                return new AddExpletive(client);
+            case Commands.REMOVE.valueOf():
+                return new RemoveExpletive(client);
+            case Commands.BOARD.valueOf():
+                return new Leaderboard(client);
+            case Commands.BACKSCAN.valueOf():
+                return new Backscan(client);
+        }
+    }
 }
 
-enum CCommands {
-    eadd = new AddExpletive(_client),
-    a = 0,
-    erem = 1,
-    r = 1,
-    board = 2,
-    b = 2,
-    backscan = 3,
-    bs = 3
+enum Commands {
+    ADD = 0,
+    A = 0,
+    REMOVE = 1,
+    R = 1,
+    BOARD = 2,
+    B = 2,
+    BACKSCAN = 3,
+    BS = 3
 }
+
