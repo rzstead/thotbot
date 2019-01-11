@@ -1,5 +1,4 @@
 import { Client, Message } from 'discord.js';
-import { Database } from 'sqlite3';
 import { IConfig } from 'config';
 import { CommandParser } from './util/CommandParser';
 import { ICommand } from './interfaces/ICommand';
@@ -8,15 +7,6 @@ class Thotbot{
 
     config: IConfig = require('config');
     token: string = this.config.get('discord.token');
-    
-    sqlite: Database = new Database('./db/basic.db', err => {
-        if (err) {
-            console.log('DB connection error!')
-        } else {
-            console.log('Connected to db.')
-        }
-    });
-    
     client: Client = new Client();
     
     public start(){
