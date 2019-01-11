@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/config": "0.0.34",
+    "@types/mongodb": "^3.1.18",
     "@types/mongoose": "^5.3.7",
     "@types/node": "^10.12.18",
     "@types/sqlite3": "^3.1.3",
