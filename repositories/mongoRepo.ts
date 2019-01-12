@@ -1,40 +1,31 @@
 import { IConfig } from 'config';
-import { Mongoose, Connection, Schema, Model, MongooseDocument, Document } from 'mongoose';
+import { Mongoose } from 'mongoose';
 import { ErrorHandler } from '../services/errorHandler';
+import { LeaderboardModel, ExpletiveModel } from '../models/schemas/index';
 
 export class MongoRepo {
+
     config: IConfig = require('config');
     mongoose: Mongoose = require('mongoose');
     connectionString: string = this.config.get('mongo.connectionString');
-    
-    leaderboard: Model<Document> = this.mongoose.model('Leaderboard', 
-        new Schema({
-            expletive: String,
-            occurrence: Number,
-            guildId: String,
-            userId: String
-        })
-    );
 
-    expletives: Model<Document> = this.mongoose.model('Expletives', 
-        new Schema({
-            expletive: String,
-            guildId: String,
-            totalOccurence: Number
-        })
-    );
+    public async addExpletive(guildId: string, expletive: string) {
+        var result;
+        await this.openConnection()
+            .then(async () =>{
+                let expletiveModel = new ExpletiveModel();
+                expletiveModel.guildId = guildId;
+                expletiveModel.expletive = expletive;
+                expletiveModel.totalOccurence = 0;
 
-    private constructor(){
-       
-    }
+                await expletiveModel.save();
+                
+                result = await ExpletiveModel.find();
 
-    public async addExpletive() {
-        this.openConnection()
-        .then(db =>{
-            //this.expletives.create(new expl, 
-            }, 
-            ErrorHandler.handleError)
-        .catch(ErrorHandler.handleError);
+            }, ErrorHandler.handleError)
+            .catch(ErrorHandler.handleError);
+        
+        return result;
     }
 
     public async removeExpletive() {

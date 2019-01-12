@@ -1,10 +1,11 @@
 import { Command } from '../commands/Command';
 import { Message, Client } from 'discord.js';
+import { CommandService } from '../../services/CommandService';
 
 export class Backscan extends Command {
 
-    constructor(client: Client) {
-        super(client);
+    constructor(client: Client, commandService: CommandService) {
+        super(client, commandService);
     }
 
     run(msg: Message) {

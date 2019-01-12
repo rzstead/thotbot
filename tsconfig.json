@@ -3,6 +3,8 @@
         "target": "es2017",
         "module": "commonjs",
         "sourceMap": false,
-        "outDir": "./bin"
+        "outDir": "./bin",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
     }
 }

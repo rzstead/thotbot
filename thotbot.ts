@@ -1,7 +1,5 @@
-import { Client, Message } from 'discord.js';
+import { Client } from 'discord.js';
 import { IConfig } from 'config';
-import { CommandParser } from './services/CommandParser';
-import { ICommand } from './interfaces/ICommand';
 import { MessageHandler } from './services/MessageHandler';
 
 class Thotbot {

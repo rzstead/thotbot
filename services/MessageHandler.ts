@@ -1,8 +1,11 @@
 import { Message, Client } from "discord.js";
 import { CommandParser } from "./CommandParser";
-import { ICommand } from "../interfaces/ICommand";
+import { ICommand } from "../models/interfaces/ICommand";
+import { CommandService } from "./CommandService";
 
 export class MessageHandler {
+
+    private static commandService = new CommandService();
 
     public static handleMessage(client, msg: Message) {
         if (msg.content.startsWith('!thot')) {
@@ -14,7 +17,7 @@ export class MessageHandler {
     }
 
     private static handleCommand(client: Client, command: string, msg: Message) {
-        let parsedCommand: ICommand = CommandParser.parseCommand(client, command);
+        let parsedCommand: ICommand = CommandParser.parseCommand(client, this.commandService, command);
 
         if (parsedCommand) {
             parsedCommand.run(msg);
