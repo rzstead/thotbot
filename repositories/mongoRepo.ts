@@ -58,6 +58,10 @@ export class MongoRepo {
 
     }
 
+    public async addBackScanData(expletiveData: IBoardData[]){
+
+    }
+
     private async openConnection() {
         return await this.mongoose.connect(this.connectionString, {useNewUrlParser: true});
     }
@@ -69,4 +73,5 @@ export class MongoRepo {
     private async expletiveExists(guildId: string, expletive: string){
         return await ExpletiveModel.findOne({'guildId': guildId, 'expletive': expletive}) != undefined;
     }
+    
 }
