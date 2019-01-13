@@ -14,11 +14,12 @@ class Thotbot {
             .on('error', console.error)
             .on('warn', console.warn)
             .on('debug', console.log)
+            .on('rateLimit', console.warn)
             .on('ready', () => {
                 console.log(`Client ready; logged in as ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
                 client.user.setActivity("over my christian servers", {
                     type: "WATCHING"
-                })
+                });
             })
             .on('disconnect', () => { console.warn('Disconnected!'); })
             .on('reconnecting', () => { console.warn('Reconnecting...'); })
