@@ -1,4 +1,4 @@
-import { Typegoose, prop } from 'typegoose';
+import { Typegoose, prop, instanceMethod, staticMethod, ModelType } from 'typegoose';
 export class ExpletiveSchema extends Typegoose{
 
     @prop({required: true})

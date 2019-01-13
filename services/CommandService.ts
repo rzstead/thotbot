@@ -4,16 +4,17 @@ export class CommandService {
 
     repo = new MongoRepo();
 
-    public async addExpletive(guildId: string, expletive: string) {
-        return await this.repo.addExpletive(guildId, expletive);
+    public async addExpletives(guildId: string, expletives: string[]) {
+        return await this.repo.addExpletives(guildId, expletives);
     }
 
-    public async removeExpletive() {
+    public async removeExpletives(guildId: string, expletives: string[]) {
+        return await this.repo.removeExpletives(guildId, expletives);
 
     }
 
-    public async getExpletives() {
-
+    public async getExpletives(guildId: string) {
+        return await this.repo.getExpletives(guildId);
     }
 
     public async getLeaderboard() {

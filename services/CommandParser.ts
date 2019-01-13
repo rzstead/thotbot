@@ -2,6 +2,7 @@ import { ICommand } from '../models/interfaces/ICommand';
 import { AddExpletive, RemoveExpletive, Leaderboard, Backscan } from '../models/commands';
 import { Client } from 'discord.js';
 import { CommandService } from './CommandService';
+import { ListExpletives } from '../models/commands/ListExpletives';
 export class CommandParser {
 
     public static parseCommand(client: Client, commandService: CommandService, command: string): ICommand {
@@ -24,6 +25,8 @@ export class CommandParser {
                 return new AddExpletive(client, commandService);
             case Commands.REMOVE.valueOf():
                 return new RemoveExpletive(client, commandService);
+            case Commands.LIST.valueOf():
+                return new ListExpletives(client, commandService);
             case Commands.BOARD.valueOf():
                 return new Leaderboard(client, commandService);
             case Commands.BACKSCAN.valueOf():
@@ -40,6 +43,8 @@ enum Commands {
     BOARD = 2,
     B = 2,
     BACKSCAN = 3,
-    BS = 3
+    BS = 3,
+    LIST = 4,
+    L = 4,
 }
 

@@ -8,7 +8,10 @@ export class RemoveExpletive extends Command {
         super(client, commandService);
     }
 
-    run(msg: Message) {
+    public async run(msg: Message) {
         msg.channel.send(`You want to remove an expletive with the properties: ${msg.content}`);
+        let expletiveList = msg.content.split(' ');
+        await this.commandService.removeExpletives(msg.guild.id, expletiveList);
+        
     }
 }
