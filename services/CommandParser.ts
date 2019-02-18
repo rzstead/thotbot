@@ -15,7 +15,6 @@ export class CommandParser {
         if (commandVal != undefined) {
             return this.initCommand(client, commandService,  commandVal);
         }
-
         return null;
     }
 

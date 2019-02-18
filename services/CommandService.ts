@@ -15,7 +15,7 @@ export class CommandService {
 
     }
 
-    public async getExpletives(guildId: string) {
+    public async getExpletives(guildId: string): Promise<any> {
         return await this.repo.getExpletives(guildId);
     }
 
@@ -27,7 +27,12 @@ export class CommandService {
 
     }
 
-    public async updateLeaderboard() {
+    public async updateUserExpletiveCount(guildId: string, userId: string, expletiveMap: Map<string, number>) {
+        let existingExpletiveData = this.repo.getExpletiveData(guildId, userId, Array.from(expletiveMap.keys()));
+        
+    }
+
+    public async updateGuildWideExpletiveTotals(guildId: string, expletiveMap: Map<string, number>){
 
     }
 

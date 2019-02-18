@@ -11,7 +11,7 @@ export class LeaderboardSchema extends Typegoose{
     expletive: string;
 
     @prop()
-    occurence: number;
+    occurrence: number;
 
 }
 
