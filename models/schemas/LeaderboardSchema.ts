@@ -1,5 +1,5 @@
-import { Typegoose, prop } from 'typegoose';
-export class LeaderboardSchema extends Typegoose{
+import { prop, getModelForClass } from '@typegoose/typegoose';
+export class Leaderboard {
 
     @prop({required: true})
     guildId: string;
@@ -15,4 +15,4 @@ export class LeaderboardSchema extends Typegoose{
 
 }
 
-export const LeaderboardModel = new LeaderboardSchema().getModelForClass(LeaderboardSchema);
+export const LeaderboardEntity = getModelForClass(Leaderboard);

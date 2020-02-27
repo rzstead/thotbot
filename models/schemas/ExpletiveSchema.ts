@@ -1,6 +1,6 @@
-import { Typegoose, prop, instanceMethod, staticMethod, ModelType } from 'typegoose';
-export class ExpletiveSchema extends Typegoose{
-
+import {prop, getModelForClass } from '@typegoose/typegoose';
+export class Expletive {
+    
     @prop({required: true})
     guildId: string;
 
@@ -9,7 +9,6 @@ export class ExpletiveSchema extends Typegoose{
 
     @prop()
     totalOccurence: number;
-
 }
 
-export const ExpletiveModel = new ExpletiveSchema().getModelForClass(ExpletiveSchema);
+export const ExpletiveEntity = getModelForClass(Expletive);

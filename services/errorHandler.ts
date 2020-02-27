@@ -1,5 +1,5 @@
 export class ErrorHandler{
-    public static handleError(err){
+    public static handleError(err: Error){
         throw err;
     }
 }

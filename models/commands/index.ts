@@ -1,4 +1,6 @@
-export { AddExpletive } from './AddExpletive';
-export { Backscan } from './Backscan';
-export { Leaderboard } from './Leaderboard';
-export { RemoveExpletive } from './RemoveExpletive';
+import { ListExpletivesCommand } from './ListExpletivesCommand';
+export { AddExpletiveCommand } from './AddExpletiveCommand';
+export { BackscanCommand } from './BackscanCommand';
+export { LeaderboardCommand } from './LeaderboardCommand';
+export { RemoveExpletiveCommand } from './RemoveExpletiveCommand';
+export { ListExpletivesCommand } from './ListExpletivesCommand';

@@ -1,6 +1,5 @@
 import { MongoRepo } from "../repositories/MongoRepo";
-import { User } from "discord.js";
-import { IBoardData } from "../models/interfaces/IBoardData";
+import { Expletive, Leaderboard } from "../models/schemas";
 
 export class CommandService {
 
@@ -15,11 +14,11 @@ export class CommandService {
 
     }
 
-    public async getExpletives(guildId: string): Promise<any> {
+    public async getExpletives(guildId: string): Promise<Expletive[]> {
         return await this.repo.getExpletives(guildId);
     }
 
-    public async backScan(backScanData: IBoardData[]){
+    public async backScan(backScanData: Leaderboard[]){
         return await this.repo.addBackScanData(backScanData);
     }
 
@@ -32,7 +31,7 @@ export class CommandService {
         
     }
 
-    public async updateGuildWideExpletiveTotals(guildId: string, expletiveMap: Map<string, number>){
+    public async updateGuildWideExpletiveTotals(guildId: string, expletives: Expletive[]){
 
     }
 
