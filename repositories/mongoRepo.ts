@@ -8,20 +8,22 @@ export class MongoRepo {
     mongoose: Mongoose = require('mongoose');
     connectionString: string = this.config.get('mongo.connectionString');
 
-    public async addExpletives(guildId: string, expletives: string[]) {
+    public async addExpletives(guildId: string, expletives: string[]): Promise<Expletive[]> {
         let mongoose = await this.openConnection();
-        var result = new Array<any>();
-        for (let index = 0; index < expletives.length; index++) {
-            const expletive = expletives[index];
+        let result: Expletive[] = [];
+
+        expletives.forEach(async expletive => {
             let expletiveModel = new ExpletiveEntity();
             expletiveModel.guildId = guildId;
             expletiveModel.expletive = expletive;
             expletiveModel.totalOccurence = 0;
+
             if (!(await this.expletiveExists(guildId, expletive))) {
                 console.log(`did not find expletive ${expletive}, adding...`)
                 result.push(await expletiveModel.save());
             }
-        }
+        });
+
         this.closeConnection(mongoose.connection);
         return result;
     }
@@ -69,10 +71,6 @@ export class MongoRepo {
 
     }
 
-    public async addBackScanData(expletiveData: Leaderboard[]) {
-
-    }
-
     private async openConnection() {
         return await this.mongoose.connect(this.connectionString, { useNewUrlParser: true });
     }
@@ -85,4 +83,7 @@ export class MongoRepo {
         return await ExpletiveEntity.findOne({ 'guildId': guildId, 'expletive': expletive }) != undefined;
     }
 
+    // public async addBackScanData(expletiveData: Leaderboard[]) {
+
+    // }
 }

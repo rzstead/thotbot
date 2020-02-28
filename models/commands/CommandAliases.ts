@@ -5,9 +5,9 @@ interface CommandAlias {
 }
 
 export const commandAliases: CommandAlias = {
-    "add": new Commands.AddExpletiveCommand(),
-    "remove": new Commands.RemoveExpletiveCommand(),
-    "list": new Commands.ListExpletivesCommand(),
-    "backscan": new Commands.BackscanCommand(),
-    "top": new Commands.LeaderboardCommand()
+    "a": new Commands.AddExpletiveCommand(),
+    "r": new Commands.RemoveExpletiveCommand(),
+    "l": new Commands.ListExpletivesCommand(),
+    //"backscan": new Commands.BackscanCommand(),
+    "t": new Commands.LeaderboardCommand()
 }

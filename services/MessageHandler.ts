@@ -26,10 +26,11 @@ export class MessageHandler {
         let words = msg.content.toLowerCase().split(' ');
         words = words.map(word => word.replace(/[\W_]+/g,""));
 
+        let potentialExpletives: Map<string, number> = new Map<string, number>();
         //parse the message for the existing expletives to match against
         words.forEach(word => {
             //check common expletive dictionary for a higher than unlikely rating for expletive
-            // if (cuss[word] > 0) {
+            if (cuss[word] > 0) {
             //     if (expletiveList.includes(word)) {
             //         currentExpletivesMap[word]++;
             //         if (!currentUserExpletiveCount.has(word)) {
@@ -38,7 +39,8 @@ export class MessageHandler {
             //             currentUserExpletiveCount[word]++;
             //         }
             //     }
-            // }
+                //potentialExpletives[word]++;
+            }
         });
 
         //get existing expletive map for guild - expletive:occurence
