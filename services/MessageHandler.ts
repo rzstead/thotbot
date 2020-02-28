@@ -1,20 +1,18 @@
 import { Message, Client } from "discord.js";
-import { CommandParser } from "./CommandParser";
 import { ICommand } from "../models/commands/ICommand";
 import { CommandService } from "./CommandService";
 import { Expletive } from '../models/schemas/ExpletiveSchema';
+import { commandAliases } from "../models/commands";
 var cuss = require('cuss');
 
 export class MessageHandler {
 
-    private static commandService = new CommandService();
-
-    public static handleMessage(client: Client, msg: Message) {
+    public static handleMessage(msg: Message) {
         if (msg.content.startsWith('!thot')) {
             msg.content = msg.content.slice(5);
             let command = msg.content.split(' ')[0];
             msg.content = msg.content.slice(command.length + 1);
-            this.handleCommand(client, command, msg);
+            this.handleCommand(command, msg);
         }else{
             this.parseExpletives(msg);
         }
@@ -26,12 +24,7 @@ export class MessageHandler {
 
         //split message by spaces, to granularlize expletive checking
         let words = msg.content.toLowerCase().split(' ');
-
-        //get existing expletive map for guild - expletive:occurence
-        let currentExpletives : Expletive[] = await this.commandService.getExpletives(guildId);
-
-        //create temp map for found expletives and their count
-        let currentUserExpletiveCount : Map<string, number> = new Map<string, number>();
+        words = words.map(word => word.replace(/[\W_]+/g,""));
 
         //parse the message for the existing expletives to match against
         words.forEach(word => {
@@ -48,13 +41,19 @@ export class MessageHandler {
             // }
         });
 
+        //get existing expletive map for guild - expletive:occurence
+        let currentExpletives : Expletive[] = await CommandService.getExpletives(guildId);
+
+        //create temp map for found expletives and their count
+        let currentUserExpletiveCount : Map<string, number> = new Map<string, number>();
+
         //after finding matches set by each guild, update the leaderboard to reflect expletive count per user
-        this.commandService.updateUserExpletiveCount(guildId, userId, currentUserExpletiveCount);
-        this.commandService.updateGuildWideExpletiveTotals(guildId, currentExpletives);
+        CommandService.updateUserExpletiveCount(guildId, userId, currentUserExpletiveCount);
+        CommandService.updateGuildWideExpletiveTotals(guildId, currentExpletives);
     }
 
-    private static handleCommand(client: Client, command: string, msg: Message) {
-        let parsedCommand: ICommand = CommandParser.parseCommand(client, this.commandService, command);
+    private static handleCommand(command: string, msg: Message) {
+        let parsedCommand: ICommand = commandAliases[command];
 
         if (parsedCommand) {
             parsedCommand.run(msg);

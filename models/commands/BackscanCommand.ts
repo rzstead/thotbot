@@ -1,21 +1,14 @@
 import { Command } from './Command';
 import { Message, Client, TextChannel, DMChannel, GroupDMChannel, GuildChannel, Collection } from 'discord.js';
-import { CommandService } from '../../services/CommandService';
-import { stringify } from 'querystring';
 
 export class BackscanCommand extends Command {
-
-    constructor(client: Client, commandService: CommandService) {
-        super(client, commandService);
-    }
-
     public async run(msg: Message) {
         //scan all channel of guild
         //for every channel
         //for every message by user?
         msg.channel.send(`You want to backscan with the properties: ${msg.content}`);
         
-        let textChannels= msg.guild.channels.filter((x => x.type === 'text'));
+        let textChannels = msg.guild.channels.filter((x => x.type === 'text'));
         console.log(`Found text channels: ${textChannels.map(x => x.id + " - " + x.name)}`);
         let messageStack: Collection<string, Message> = new Collection<string, Message>();
 

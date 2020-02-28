@@ -23,8 +23,7 @@ class Thotbot {
             })
             .on('disconnect', () => { console.warn('Disconnected!'); })
             .on('reconnecting', () => { console.warn('Reconnecting...'); })
-            .on('message', (msg) => MessageHandler.handleMessage(client, msg));
-            
+            .on('message', (msg) => MessageHandler.handleMessage(msg));      
     }
 }
 
