@@ -4,8 +4,8 @@ import { CommandService } from '../../services/CommandService';
 
 export class RemoveExpletiveCommand extends Command {
     public async run(msg: Message) {
-        msg.channel.send(`You want to remove an expletive with the properties: ${msg.content}`);
         let expletiveList = msg.content.split(' ');
-        await CommandService.removeExpletives(msg.guild.id, expletiveList);       
+        await CommandService.removeExpletives(msg.guild.id, expletiveList);      
+        msg.channel.send(`You removed the expletives: ${msg.content}`);
     }
 }

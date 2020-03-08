@@ -1,5 +1,5 @@
 import { IConfig } from 'config';
-import { Mongoose, Connection } from 'mongoose';
+import { Mongoose, Connection, DocumentQuery, mongo } from 'mongoose';
 import { LeaderboardEntity, ExpletiveEntity, Expletive, Leaderboard } from '../models/schemas/index';
 
 export class MongoRepo {
@@ -12,17 +12,18 @@ export class MongoRepo {
         let mongoose = await this.openConnection();
         let result: Expletive[] = [];
 
-        expletives.forEach(async expletive => {
-            let expletiveModel = new ExpletiveEntity();
-            expletiveModel.guildId = guildId;
-            expletiveModel.expletive = expletive;
-            expletiveModel.totalOccurence = 0;
-
+        let results = expletives.map(async expletive => {
             if (!(await this.expletiveExists(guildId, expletive))) {
                 console.log(`did not find expletive ${expletive}, adding...`)
-                result.push(await expletiveModel.save());
+                return await ExpletiveEntity.create({
+                    guildId: guildId,
+                    expletive: expletive,
+                    totalOccurences: 0
+                });
             }
         });
+
+        result = await Promise.all(results);
 
         this.closeConnection(mongoose.connection);
         return result;
@@ -30,13 +31,16 @@ export class MongoRepo {
 
     public async removeExpletives(guildId: string, expletives: string[]) {
         let mongoose = await this.openConnection();
-        for (let index = 0; index < expletives.length; index++) {
-            const expletive = expletives[index];
+
+        let results = expletives.map(async expletive => {
             if (await this.expletiveExists(guildId, expletive)) {
                 console.log(`expletive ${expletive} exists, removing...`)
-                await ExpletiveEntity.deleteOne({ 'expletive': expletive, 'guildId': guildId })
+                return await ExpletiveEntity.deleteOne({ 'expletive': expletive, 'guildId': guildId })
             }
-        }
+        });
+
+        await Promise.all(results);
+
         this.closeConnection(mongoose.connection);
     }
 
@@ -44,31 +48,38 @@ export class MongoRepo {
         let mongoose = await this.openConnection();
         let result = await ExpletiveEntity.find({ 'guildId': guildId });
         await this.closeConnection(mongoose.connection);
-        
-        return result.map<Expletive>(expletiveEntity =>{
-            return { guildId: expletiveEntity.guildId, expletive: expletiveEntity.expletive, totalOccurence: expletiveEntity.totalOccurence };
+
+        return result.map(expletiveEntity => {
+            return { id:expletiveEntity.id,
+                     guildId: expletiveEntity.guildId, 
+                     expletive: expletiveEntity.expletive, 
+                     totalOccurences: expletiveEntity.totalOccurences,
+                     userOccurences: expletiveEntity.userOccurences
+                    };
         });
     }
 
-    public async getExpletiveData(guildId: string, userId: string, expletives: string[]): Promise<Leaderboard[]> {
+    public async updateExpletives(expletives: Expletive[]): Promise<Expletive[]> {
         let mongoose = await this.openConnection();
-        let resultSet: Leaderboard[] = [];
-        for (let i = 0; i < expletives.length; i++) {
-            const expletive = expletives[i];
-            let result = await LeaderboardEntity.findOne({ 'guildId': guildId, 'userId': userId, 'expletive': expletive });
-            let expletiveData: Leaderboard = { expletive: result.expletive, guildId: result.guildId, userId: result.userId, occurrence: result.occurrence };
-            resultSet.push(expletiveData);
-        }
+
+        let results = expletives.map(async expletive => {
+            return ExpletiveEntity.findByIdAndUpdate(expletive.id, expletive);
+        })
+        
+        let result = Promise.all(results);
+
         await this.closeConnection(mongoose.connection);
-        return resultSet;
+
+        return result;
     }
 
-    public async updateLeaderboard() {
+    public async getExpletivesByUser(guildId: string, userId: string): Promise<Expletive[]> {
+        let mongoose = await this.openConnection();
 
-    }
+        let results = ExpletiveEntity.find({ 'guildId': guildId, 'userId': userId });
 
-    public async resetLeaderboard() {
-
+        await this.closeConnection(mongoose.connection);
+        return results;
     }
 
     private async openConnection() {

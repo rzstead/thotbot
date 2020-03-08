@@ -1,5 +1,6 @@
 import { MongoRepo } from "../repositories/MongoRepo";
 import { Expletive, Leaderboard } from "../models/schemas";
+import { DocumentType } from "@typegoose/typegoose";
 
 export class CommandService {
 
@@ -19,21 +20,12 @@ export class CommandService {
         return await this.repo.getExpletives(guildId);
     }
 
-    public static async updateUserExpletiveCount(guildId: string, userId: string, expletiveMap: Map<string, number>) {
-        let existingExpletiveData = this.repo.getExpletiveData(guildId, userId, Array.from(expletiveMap.keys()));
-        
+    public static async updateExpletives(expletives: Expletive[]){
+        return await this.repo.updateExpletives(expletives);
     }
 
-    public static async updateGuildWideExpletiveTotals(guildId: string, expletives: Expletive[]){
-
-    }
-
-    public static async getLeaderboard() {
-
-    }
-
-    public static async resetLeaderboard() {
-
+    public static async getExpletivesByUser(guildId: string, userId: string) {
+        return await this.repo.getExpletivesByUser(guildId, userId);
     }
 
     // public static async backScan(backScanData: Leaderboard[]){

@@ -1,5 +1,5 @@
 import { Command } from './Command';
-import { Message, Client, TextChannel, TextBasedChannel } from 'discord.js';
+import { Message } from 'discord.js';
 import { CommandService } from '../../services/CommandService';
 import { Expletive } from '../schemas';
 
