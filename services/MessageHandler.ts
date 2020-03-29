@@ -15,11 +15,11 @@ export class MessageHandler {
             msg.content = msg.content.slice(command.length + 1);
             this.handleCommand(command, msg);
         } else {
-            this.parseExpletives(msg);
+            this.parseMessage(msg);
         }
     }
 
-    private static async parseExpletives(msg: Message): Promise<void> {
+    private static async parseMessage(msg: Message): Promise<void> {
         let guildId = msg.guild.id;
         let userId = msg.author.id;
 
@@ -29,47 +29,46 @@ export class MessageHandler {
 
         let potentialExpletives: Map<string, number> = new Map<string, number>();
         //parse the message for the existing expletives to match against
-        words.forEach(word => {
-            //check common expletive dictionary for a higher than unlikely rating for expletive
-            if (cuss[word] > 0) {
-                if (potentialExpletives.has(word)) {
-                    let currVal: number = potentialExpletives.get(word);
-                    potentialExpletives.set(word, currVal++);
+        this.findPotentialExpletives(words, potentialExpletives);
+
+        if (potentialExpletives.size > 0) {
+            let guildExpletives: Expletive[] = await CommandService.getExpletives(guildId);
+
+            this.populateGuildExpletives(guildExpletives, potentialExpletives, userId);
+
+            CommandService.updateExpletives(guildExpletives)
+        }
+    }
+
+    private static populateGuildExpletives(guildExpletives: Expletive[], potentialExpletives: Map<string, number>, userId: string) {
+        guildExpletives.forEach(expletive => {
+            if (potentialExpletives.has(expletive.expletive)) {
+                expletive.totalOccurences++;
+                let userOccurences = expletive.userOccurences.find(x => x.userId === userId);
+                if (userOccurences) {
+                    userOccurences.occurences++;
                 }
                 else {
-                    potentialExpletives.set(word, 1);
+                    expletive.userOccurences.push({
+                        userId: userId,
+                        occurences: 1
+                    });
                 }
             }
         });
+    }
 
-        if (potentialExpletives.size > 0) {
-            //get existing expletive map for guild - expletive:occurence
-            let guildExpletives: Expletive[] = await CommandService.getExpletives(guildId);
-
-            guildExpletives.forEach(expletive => {
-                if (potentialExpletives.has(expletive.expletive)) {
-
-                    expletive.totalOccurences++;
-
-                    let userOccurences = expletive.userOccurences.find(x => x.userId === userId);
-                    if (userOccurences) {
-                        userOccurences.occurences++;
-                    }
-                    else {
-                        expletive.userOccurences.push({
-                            userId: userId,
-                            occurences: 1
-                        });
-                    }
-                }
-            });
-
-            CommandService.updateExpletives(guildExpletives)
-
-            //after finding matches set by each guild, update the leaderboard to reflect expletive count per user
-            //CommandService.updateUserExpletiveCount(guildId, userId, currentUserExpletiveCount);
-            //CommandService.updateGuildWideExpletiveTotals(guildId, currentExpletives);
-        }
+    private static findPotentialExpletives(words: string[], potentialExpletives: Map<string, number>) {
+        words.forEach(word => {
+            //check common expletive dictionary for a higher than unlikely rating for expletive
+            if (potentialExpletives.has(word)) {
+                let currVal: number = potentialExpletives.get(word);
+                potentialExpletives.set(word, currVal++);
+            }
+            else {
+                potentialExpletives.set(word, 1);
+            } 
+        });
     }
 
     private static handleCommand(command: string, msg: Message): void {

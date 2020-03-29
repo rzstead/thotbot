@@ -9,7 +9,7 @@ export class UserOccurences {
 }
 
 export class Expletive {
-    @prop({required: true})
+    @prop()
     id: string;
     
     @prop({required: true})

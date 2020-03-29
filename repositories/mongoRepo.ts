@@ -50,7 +50,7 @@ export class MongoRepo {
         await this.closeConnection(mongoose.connection);
 
         return result.map(expletiveEntity => {
-            return { id:expletiveEntity.id,
+            return { id:expletiveEntity._id,
                      guildId: expletiveEntity.guildId, 
                      expletive: expletiveEntity.expletive, 
                      totalOccurences: expletiveEntity.totalOccurences,
@@ -66,7 +66,7 @@ export class MongoRepo {
             return ExpletiveEntity.findByIdAndUpdate(expletive.id, expletive);
         })
         
-        let result = Promise.all(results);
+        let result = await Promise.all(results);
 
         await this.closeConnection(mongoose.connection);
 
@@ -76,14 +76,14 @@ export class MongoRepo {
     public async getExpletivesByUser(guildId: string, userId: string): Promise<Expletive[]> {
         let mongoose = await this.openConnection();
 
-        let results = ExpletiveEntity.find({ 'guildId': guildId, 'userId': userId });
+        let results = await ExpletiveEntity.find({ 'guildId': guildId, 'userOccurences.userId': userId });
 
         await this.closeConnection(mongoose.connection);
         return results;
     }
 
     private async openConnection() {
-        return await this.mongoose.connect(this.connectionString, { useNewUrlParser: true });
+        return await this.mongoose.connect(this.connectionString, { useNewUrlParser: true, useUnifiedTopology: true });
     }
 
     private async closeConnection(connection: Connection) {
