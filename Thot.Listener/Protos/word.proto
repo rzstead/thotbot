@@ -1,0 +1,46 @@
+syntax = "proto3";
+package word;
+
+option csharp_namespace = "Thot.Listener";
+
+service Words {
+  rpc Add (AddRequest) returns (ResultMessage);
+  rpc Remove (RemoveRequest) returns (ResultMessage);
+  rpc List (ListRequest) returns (ListResponse);
+  rpc Reset (ResetRequest) returns (ResultMessage);
+}
+
+message AddRequest {
+  uint64 serverId = 1;
+  repeated string words = 2;
+  string message = 3;
+}
+
+message RemoveRequest {
+  uint64 serverId = 1;
+  repeated string words = 2;
+}
+
+message ListRequest {
+  uint64 serverId = 1;
+}
+
+message ResetRequest {
+  uint64 serverId = 1;
+  repeated string wordsToReset = 2;
+}
+
+message ListResponse {
+  repeated WordCount wordCounts = 1;
+}
+
+message WordCount {
+  string word = 1;
+  int32 count = 2;
+}
+
+message ResultMessage {
+  string message = 1;
+}
+
+

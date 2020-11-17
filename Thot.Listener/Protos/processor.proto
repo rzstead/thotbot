@@ -1,0 +1,15 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+package processor;
+
+option csharp_namespace = "Thot.Listener";
+
+service MessageProcessor {
+    rpc Process (ProcessRequest) returns (google.protobuf.Empty);
+}
+
+message ProcessRequest {
+    uint64 serverId = 1;
+    uint64 authorId = 2;
+    string message = 3;
+}

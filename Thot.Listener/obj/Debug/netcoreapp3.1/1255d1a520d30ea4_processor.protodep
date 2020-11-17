@@ -1,0 +1,3 @@
+obj/Debug/netcoreapp3.1/Protos/Processor.cs \
+obj/Debug/netcoreapp3.1/Protos/ProcessorGrpc.cs: /home/ryan/.nuget/packages/grpc.tools/2.33.1/build/native/include/google/protobuf/empty.proto\
+ Protos/processor.proto

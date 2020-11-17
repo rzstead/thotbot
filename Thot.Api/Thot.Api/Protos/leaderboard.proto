@@ -1,0 +1,23 @@
+syntax = "proto3";
+package leaderboard;
+
+option csharp_namespace = "Thot.Api";
+
+service Leaderboard {
+    rpc Top (LeaderboardRequest) returns (LeaderboardResponse);
+}
+
+message LeaderboardRequest {
+    uint64 serverId = 1;
+    uint64 authorId = 2;
+}
+
+message LeaderboardResponse {
+    repeated UserWordCount WordCount = 1;
+}
+
+message UserWordCount {
+    uint64 authorId = 1;
+    string word = 2;
+    int32 count = 3;
+}

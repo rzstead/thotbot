@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\word.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\processor.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\leaderboard.proto" GrpcServices="Server" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.33.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+    <ProjectReference Include="..\Thot.Api.Core\Thot.Api.Core.csproj" />
+    <ProjectReference Include="..\Thot.Api.Infrastructure\Thot.Api.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>
