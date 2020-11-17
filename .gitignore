@@ -1,7 +1,0 @@
-node_modules
-.vscode
-*.db
-/package-lock.json
-/config/default.json
-*.js
-*.map
