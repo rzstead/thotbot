@@ -101,9 +101,9 @@ namespace Thot.Listener.Commands
                     {
                         case "Leaderboard":
                             var userWords = await _leaderboardService.TopAsync(authorId, serverId, page);
-                            var user = message.MentionedUsers.FirstOrDefault()?.Username;
+                            var user = message.MentionedUsers.FirstOrDefault().Id;
                             var users = channel.Guild.Users;
-                            embed = EmbedFactory.BuildLeaderboardEmbed(userWords, page, user, users);
+                            embed = EmbedFactory.BuildLeaderboardEmbed(userWords, page, users.FirstOrDefault(x => x.Id == user), users);
                             break;
                         case "Tracked Words":
                             var words = await _wordService.List(serverId, page);
