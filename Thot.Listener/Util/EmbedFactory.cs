@@ -6,12 +6,12 @@ using Thot.Listener;
 
 public static class EmbedFactory
 {
-    public static Embed BuildLeaderboardEmbed(List<UserWordCount> words, int currentPage, string userMention = null, IReadOnlyCollection<SocketGuildUser> users = null)
+    public static Embed BuildLeaderboardEmbed(List<UserWordCount> words, int currentPage, SocketGuildUser user = null, IReadOnlyCollection<SocketGuildUser> users = null)
     {
         var builder = new EmbedBuilder();
         builder.WithTitle("Leaderboard");
 
-        if (userMention is null)
+        if (user is null)
         {
             builder.WithDescription($"And how many times I've seen you all say each");
             foreach (var word in words)
@@ -22,11 +22,11 @@ public static class EmbedFactory
         }
         else
         {
-            words.OrderByDescending(x => x.Count).ToList().ForEach(word =>
+            words.OrderByDescending(x => x.Count).Where(x => x.AuthorId == user.Id).ToList().ForEach(word =>
             {
                 builder.AddField($"{word.Word}", word.Count, true);
             });
-            builder.WithDescription($"And how many times I've seen {userMention} say each");
+            builder.WithDescription($"And how many times I've seen {user.Username} say each");
         }
 
         builder.WithFooter($"Page {currentPage + 1}");

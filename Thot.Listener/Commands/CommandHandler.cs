@@ -112,14 +112,19 @@ namespace Thot.Listener.Commands
                     }
 
                     await message.ModifyAsync((properties) =>
-                    {
-                        properties.Embed = embed;
-                    });
+                     {
+                         properties.Embed = embed;
+                     });
 
                     await message.RemoveAllReactionsAsync();
-                    await message.AddReactionsAsync(new IEmote[] {
-                    new Emoji(PaginationEmote.Back.EmoteValue),
-                    new Emoji(PaginationEmote.Forward.EmoteValue) });
+
+                    _ = Task.Run(() =>
+                     {
+                         message.AddReactionsAsync(new IEmote[] {
+                            new Emoji(PaginationEmote.Back.EmoteValue),
+                            new Emoji(PaginationEmote.Forward.EmoteValue)
+                        });
+                     });
                 }
             }
         }

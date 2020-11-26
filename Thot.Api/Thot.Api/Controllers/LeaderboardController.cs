@@ -43,7 +43,8 @@ namespace Thot.Api.Controllers
                 {
                     if (word.SeenFrom.Any())
                     {
-                        var user = word.SeenFrom.OrderByDescending(x => x.Amount).First(x => x.UserId == authorId);
+                        var user = word.SeenFrom.OrderByDescending(x => x.Amount).FirstOrDefault(x => x.UserId == authorId);
+                        if (user is null) continue;
 
                         response.WordCount.Add(new UserWordCount { AuthorId = user.UserId, Count = user.Amount, Word = word.Value });
                     }
