@@ -23,7 +23,7 @@ namespace Thot.Listener
             var services = new Initialize(_discordClient).BuildServiceProvider();
             _commandHandler = (CommandHandler)services.GetService(typeof(CommandHandler));
 
-            await RegisterDiscordEvents();
+            _discordClient.Ready += RegisterDiscordEvents;
             await _discordClient.LoginAsync(TokenType.Bot, _config.DiscordToken);
             await _discordClient.StartAsync();
 
@@ -38,9 +38,10 @@ namespace Thot.Listener
                 await guild.SystemChannel.SendMessageAsync("Hiya, I'm Thotbot. Use !thot.help to see what I can do!");
             };
 
-            await _discordClient.DownloadUsersAsync(_discordClient.Guilds);
             await _discordClient.SetActivityAsync(new ThotActivity());
             await _commandHandler.InstallCommandsAsync();
+            await _discordClient.DownloadUsersAsync(_discordClient.Guilds);
+            System.Console.WriteLine("Ready!");
         }
     }
 }

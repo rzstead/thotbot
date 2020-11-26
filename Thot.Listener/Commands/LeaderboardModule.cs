@@ -21,8 +21,8 @@ namespace Thot.Listener.Commands
         [Summary("Displays the users who have said the most tracked words. (Can also show per user)")]
         public async Task TopAsync(string userMention = null)
         {
-            var userId = Context.Message.MentionedUsers.FirstOrDefault(x => x.Username == userMention)?.Id;
-
+            var userId = Context.Message.MentionedUsers.FirstOrDefault(x => x.Mention == userMention)?.Id;
+            var users = Context.Guild.Users;
             var words = new List<UserWordCount>();
             try
             {
@@ -38,12 +38,11 @@ namespace Thot.Listener.Commands
                 Embed embed = null;
                 if (userMention is null)
                 {
-                    var users = Context.Guild.Users;
                     embed = EmbedFactory.BuildLeaderboardEmbed(words, 0, null, users);
                 }
                 else
                 {
-                    var user = Context.Guild.Users.FirstOrDefault(x => x.Username == userMention);
+                    var user = users.FirstOrDefault(x => x.Mention == userMention);
                     embed = EmbedFactory.BuildLeaderboardEmbed(words, 0, user, null);
                 }
 
