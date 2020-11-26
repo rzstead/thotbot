@@ -22,6 +22,7 @@ namespace Thot.Listener.Commands
         public async Task TopAsync(string userMention = null)
         {
             var userId = Context.Message.MentionedUsers.FirstOrDefault(x => x.Mention == userMention)?.Id;
+            await Context.Guild.DownloadUsersAsync();
             var users = Context.Guild.Users;
             var words = new List<UserWordCount>();
             try
