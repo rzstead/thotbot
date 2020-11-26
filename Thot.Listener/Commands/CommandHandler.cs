@@ -36,6 +36,7 @@ namespace Thot.Listener.Commands
 
     public class CommandHandler
     {
+        private const int PAGE_LIMIT = 9;
         private readonly DiscordSocketClient _discordClient;
         private readonly CommandService _commands;
         private readonly IServiceProvider _services;
@@ -64,12 +65,10 @@ namespace Thot.Listener.Commands
 
         private async Task HandleReaction(Cacheable<IUserMessage, ulong> messageParam, ISocketMessageChannel channelParam, SocketReaction reaction)
         {
-            RestUserMessage message = null;
-            if (messageParam.Value is null)
-            {
-                message = await channelParam.GetMessageAsync(messageParam.Id) as RestUserMessage;
-                if (message is null) return;
-            }
+            if (!PaginationEmote.Emotes.Any(x => x.EmoteValue == reaction.Emote.Name)) return;
+
+            var message = await messageParam.GetOrDownloadAsync() as RestUserMessage;
+            if (message is null) return;
 
             var channel = channelParam as SocketGuildChannel;
             if (channel is null) return;
@@ -81,6 +80,9 @@ namespace Thot.Listener.Commands
                 && reaction.UserId != _discordClient.CurrentUser.Id
                 && message.Embeds.FirstOrDefault(x => PaginatedCommands.Contains(x.Title)) != null)
             {
+                var canBack = false;
+                var canForward = false;
+                var emotesToAdd = new List<IEmote>();
                 var emote = reaction.Emote.Name;
                 var page = int.Parse(message.Embeds.First(x => x.Footer.HasValue && x.Footer.Value.Text.Contains("Page")).Footer.Value.Text.Substring(4)) - 1;
                 var title = message.Embeds.First().Title;
@@ -100,31 +102,43 @@ namespace Thot.Listener.Commands
                     switch (title)
                     {
                         case "Leaderboard":
-                            var userWords = await _leaderboardService.TopAsync(authorId, serverId, page);
                             var user = message.MentionedUsers.FirstOrDefault()?.Id ?? 0;
+                            var userWords = await _leaderboardService.TopAsync(user, serverId, page);
+                            userWords = userWords.OrderByDescending(x => x.Count).ToList();
                             var users = channel.Guild.Users;
                             embed = EmbedFactory.BuildLeaderboardEmbed(userWords, page, users.FirstOrDefault(x => x.Id == user), users);
                             break;
                         case "Tracked Words":
                             var words = await _wordService.List(serverId, page);
+                            words = words.OrderByDescending(x => x.Count).ToList();
                             embed = EmbedFactory.BuildWordListEmbed(words, page);
                             break;
                     }
 
-                    await message.ModifyAsync((properties) =>
-                     {
-                         properties.Embed = embed;
-                     });
+                    if (embed.Fields.Count() == PAGE_LIMIT)
+                    {
+                        emotesToAdd.Add(new Emoji(PaginationEmote.Forward.EmoteValue));
+                    }
 
-                    await message.RemoveAllReactionsAsync();
+                    if (page != 0)
+                    {
+                        emotesToAdd.Add(new Emoji(PaginationEmote.Back.EmoteValue));
+                    }
+                    try
+                    {
+                        await message.RemoveAllReactionsAsync();
 
-                    _ = Task.Run(() =>
-                     {
-                         message.AddReactionsAsync(new IEmote[] {
-                            new Emoji(PaginationEmote.Back.EmoteValue),
-                            new Emoji(PaginationEmote.Forward.EmoteValue)
-                        });
-                     });
+                        await message.ModifyAsync((properties) =>
+                         {
+                             properties.Embed = embed;
+                         });
+
+                        await message.AddReactionsAsync(emotesToAdd.ToArray());
+                    }
+                    catch (Exception e)
+                    {
+                        Console.Error.Write(e);
+                    }
                 }
             }
         }

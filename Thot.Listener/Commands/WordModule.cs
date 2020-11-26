@@ -14,6 +14,7 @@ namespace Thot.Listener.Commands
         private WordService _wordService = new WordService();
         private const int UPPER_WORD_OPERATION_LIMIT = 10;
         private const int UPPER_WORD_LENGTH_LIMIT = 255;
+        private const int PAGE_LIMIT = 9;
 
         [Command("add")]
         [Summary("Add some words for me to track")]
@@ -90,10 +91,12 @@ namespace Thot.Listener.Commands
             {
                 var embed = EmbedFactory.BuildWordListEmbed(words, 0);
 
-                var message = await ReplyAsync("", false, embed);
-                await message.AddReactionsAsync(new IEmote[] {
-                    new Emoji(PaginationEmote.Back.EmoteValue),
+                if (words.Count() == PAGE_LIMIT)
+                {
+                    var message = await ReplyAsync("", false, embed);
+                    await message.AddReactionsAsync(new IEmote[] {
                     new Emoji(PaginationEmote.Forward.EmoteValue) });
+                }
             }
             else
             {

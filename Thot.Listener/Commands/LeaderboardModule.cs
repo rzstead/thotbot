@@ -9,6 +9,7 @@ namespace Thot.Listener.Commands
 {
     public class LeaderboardModule : ModuleBase<SocketCommandContext>
     {
+        private const int PAGE_LIMIT = 9;
         private LeaderboardService _leaderboardService = new LeaderboardService();
 
         private CommandService _commandService;
@@ -47,9 +48,11 @@ namespace Thot.Listener.Commands
                 }
 
                 var message = await ReplyAsync("", false, embed);
-                await message.AddReactionsAsync(new IEmote[] {
-                    new Emoji(PaginationEmote.Back.EmoteValue),
+                if (words.Count() == 9)
+                {
+                    await message.AddReactionsAsync(new IEmote[] {
                     new Emoji(PaginationEmote.Forward.EmoteValue) });
+                }
             }
             else
             {
