@@ -26,41 +26,30 @@ namespace Thot.Listener.Commands
             var words = new List<UserWordCount>();
             try
             {
-                words = await _leaderboardService.TopAsync(user ?? 0, Context.Guild.Id);
+                words = await _leaderboardService.TopAsync(user ?? 0, Context.Guild.Id, 0);
             }
             catch (Exception e)
             {
                 System.Console.Error.Write(e);
-
             }
 
             if (words.Any())
             {
-                var builder = new EmbedBuilder();
-                builder.WithTitle("Leaderboard");
-
+                Embed embed = null;
                 if (userMention is null)
                 {
-                    var guildUsers = Context.Guild.Users;
-                    builder.WithDescription($"And how many times I've seen you all say each");
-                    foreach (var word in words)
-                    {
-                        var wordUser = guildUsers.First(x => x.Id == word.AuthorId).Username;
-                        builder.AddField(wordUser, $"{word.Word} - {word.Count}", true);
-                    }
+                    var users = Context.Guild.Users;
+                    embed = EmbedFactory.BuildLeaderboardEmbed(words, 0, null, users);
                 }
                 else
                 {
-                    words.OrderByDescending(x => x.Count).ToList().ForEach(word =>
-                    {
-                        builder.AddField($"{word.Word}", word.Count, true);
-                    });
-                    builder.WithDescription($"And how many times I've seen {userMention} say each");
+                    embed = EmbedFactory.BuildLeaderboardEmbed(words, 0, userMention, null);
                 }
 
-                var embed = builder.Build();
-
-                await ReplyAsync("", false, embed);
+                var message = await ReplyAsync("", false, embed);
+                await message.AddReactionsAsync(new IEmote[] {
+                    new Emoji(PaginationEmote.Back.EmoteValue),
+                    new Emoji(PaginationEmote.Forward.EmoteValue) });
             }
             else
             {

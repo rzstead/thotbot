@@ -22,8 +22,6 @@ namespace Thot.Api.Infrastructure.Repositories
 
         public async Task<WordSet> Get(ulong guildId)
         {
-            var word = _words.AsQueryable().FirstOrDefault();
-            System.Console.WriteLine($"Found word: {word}");
             return await _words.Find<WordSet>(word => word.ServerId == guildId).FirstOrDefaultAsync();
         }
 

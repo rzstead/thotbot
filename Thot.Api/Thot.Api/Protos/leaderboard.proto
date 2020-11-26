@@ -10,6 +10,7 @@ service Leaderboard {
 message LeaderboardRequest {
     uint64 serverId = 1;
     uint64 authorId = 2;
+    int32 pagesToSkip = 3;
 }
 
 message LeaderboardResponse {

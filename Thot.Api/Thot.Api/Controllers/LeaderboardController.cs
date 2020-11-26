@@ -9,6 +9,8 @@ namespace Thot.Api.Controllers
     public class LeaderboardController : Leaderboard.LeaderboardBase
     {
         private readonly ILeaderboardService _leaderboardService;
+        private const int PAGE_SIZE = 9;
+
         public LeaderboardController(ILeaderboardService leaderboardService)
         {
             _leaderboardService = leaderboardService;
@@ -18,12 +20,14 @@ namespace Thot.Api.Controllers
         {
             var response = new LeaderboardResponse();
             var authorId = request.AuthorId;
+            var pagesToSkip = request.PagesToSkip * PAGE_SIZE;
 
             var wordSet = await _leaderboardService.Top(request.ServerId, request.ServerId);
+            var words = wordSet.Words.Skip(pagesToSkip).Take(PAGE_SIZE).ToList();
 
             if (authorId == 0)
             {
-                foreach (var word in wordSet.Words)
+                foreach (var word in words)
                 {
                     if (word.SeenFrom.Any())
                     {
@@ -35,7 +39,7 @@ namespace Thot.Api.Controllers
             }
             else
             {
-                foreach (var word in wordSet.Words)
+                foreach (var word in words)
                 {
                     if (word.SeenFrom.Any())
                     {

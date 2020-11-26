@@ -10,7 +10,9 @@ namespace Thot.Api.Controllers
     public class WordController : Words.WordsBase
     {
         private readonly ILogger<WordController> _logger;
+
         private readonly IWordService _wordService;
+        private const int PAGE_SIZE = 9;
 
         public WordController(IWordService wordService, ILogger<WordController> logger)
         {
@@ -32,7 +34,9 @@ namespace Thot.Api.Controllers
 
         public override async Task<ListResponse> List(ListRequest request, ServerCallContext context)
         {
+            var pagesToSkip = request.PagesToSkip * PAGE_SIZE;
             var wordSet = await _wordService.Get(request.ServerId);
+            var words = wordSet.Words.Skip(pagesToSkip).Take(PAGE_SIZE).ToList();
             var response = new ListResponse();
 
             if (wordSet is null)
@@ -40,7 +44,7 @@ namespace Thot.Api.Controllers
                 return response;
             }
 
-            wordSet.Words.ForEach(word =>
+            words.ForEach(word =>
             {
                 response.WordCounts.Add(new WordCount { Word = word.Value, Count = word.SeenTotal });
             });

@@ -23,6 +23,7 @@ message RemoveRequest {
 
 message ListRequest {
   uint64 serverId = 1;
+  int32 pagesToSkip = 2;
 }
 
 message ResetRequest {

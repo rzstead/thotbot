@@ -59,12 +59,11 @@ namespace Thot.Listener.Repository
         }
 
         /// <exception cref="System.Exception">Thrown when something goes wrong</exception>
-        public async Task<List<WordCount>> List(ulong serverId)
+        public async Task<List<WordCount>> List(ulong serverId, int pagesToSkip)
         {
             ListResponse result = new ListResponse();
 
-            result = await _client.ListAsync(new ListRequest { ServerId = serverId });
-
+            result = await _client.ListAsync(new ListRequest { ServerId = serverId, PagesToSkip = pagesToSkip });
 
             return result.WordCounts.ToList();
         }

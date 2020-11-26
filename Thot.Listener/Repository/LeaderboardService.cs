@@ -19,12 +19,13 @@ public class LeaderboardService
     }
 
     /// <exception cref="System.Exception">Thrown when something goes wrong</exception>
-    public async Task<List<UserWordCount>> TopAsync(ulong authorId, ulong serverId)
+    public async Task<List<UserWordCount>> TopAsync(ulong authorId, ulong serverId, int pagesToSkip)
     {
         var request = new LeaderboardRequest()
         {
             AuthorId = authorId,
-            ServerId = serverId
+            ServerId = serverId,
+            PagesToSkip = pagesToSkip
         };
 
         var response = await _client.TopAsync(request);
