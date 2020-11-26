@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Discord;
@@ -16,8 +17,8 @@ public static class EmbedFactory
             builder.WithDescription($"And how many times I've seen you all say each");
             foreach (var word in words)
             {
-                var wordUser = users.First(x => x.Id == word.AuthorId).Username;
-                builder.AddField(wordUser, $"{word.Word} - {word.Count}", true);
+                var wordUser = users.FirstOrDefault(x => x.Id == word.AuthorId)?.Username;
+                builder.AddField(wordUser ?? "Unknown", $"{word.Word} - {word.Count}", true);
             }
         }
         else
