@@ -36,7 +36,7 @@ namespace Thot.Api.Controllers
         {
             var pagesToSkip = request.PagesToSkip * PAGE_SIZE;
             var wordSet = await _wordService.Get(request.ServerId);
-            var words = wordSet.Words.Skip(pagesToSkip).Take(PAGE_SIZE).ToList();
+            var words = wordSet.Words.OrderByDescending(x => x.SeenTotal).Skip(pagesToSkip).Take(PAGE_SIZE).ToList();
             var response = new ListResponse();
 
             if (wordSet is null)
