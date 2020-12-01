@@ -80,8 +80,6 @@ namespace Thot.Listener.Commands
                 && reaction.UserId != _discordClient.CurrentUser.Id
                 && message.Embeds.FirstOrDefault(x => PaginatedCommands.Contains(x.Title)) != null)
             {
-                var canBack = false;
-                var canForward = false;
                 var emotesToAdd = new List<IEmote>();
                 var emote = reaction.Emote.Name;
                 var page = int.Parse(message.Embeds.First(x => x.Footer.HasValue && x.Footer.Value.Text.Contains("Page")).Footer.Value.Text.Substring(4)) - 1;

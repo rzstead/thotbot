@@ -4,11 +4,14 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Thot.Listener.Util;
 using Thot.Listener.Commands;
+using System.Timers;
+using System;
 
 namespace Thot.Listener
 {
     public class Startup
     {
+        private const int REFRESH_TIMEOUT = 10;
         private readonly Config _config = new Config();
         private DiscordSocketClient _discordClient;
         private CommandHandler _commandHandler;
@@ -24,11 +27,29 @@ namespace Thot.Listener
             _commandHandler = (CommandHandler)services.GetService(typeof(CommandHandler));
 
             _discordClient.Ready += RegisterDiscordEvents;
-            await _discordClient.LoginAsync(TokenType.Bot, _config.DiscordToken);
-            await _discordClient.StartAsync();
+
+            Timer timer = new Timer(60000 * REFRESH_TIMEOUT);
+
+            timer.Elapsed += Reboot;
+            timer.AutoReset = true;
+            timer.Enabled = true;
 
             // Block this task until the program is closed.
             await Task.Delay(-1);
+        }
+
+        private async void Reboot(object sender, ElapsedEventArgs e)
+        {
+            if (_discordClient.LoginState == LoginState.LoggedIn)
+            {
+                await _discordClient.StopAsync();
+                await _discordClient.LogoutAsync();
+            }
+            else
+            {
+                await _discordClient.LoginAsync(TokenType.Bot, _config.DiscordToken);
+                await _discordClient.StartAsync();
+            }
         }
 
         private async Task RegisterDiscordEvents()

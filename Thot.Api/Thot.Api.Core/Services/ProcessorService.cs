@@ -18,13 +18,13 @@ namespace Thot.Api.Core.Services
 
             if (dbWordSet is null) return;
 
-            var dbWords = dbWordSet.Words.Select(x => x.Value);
+            var dbWords = dbWordSet.Select(x => x.Value);
             var incomingWords = content.Split(' ').ToList();
 
             foreach (var incomingWord in incomingWords)
             {
                 //determine if word is being tracked at all
-                var dbWord = dbWordSet.Words.FirstOrDefault(x => x.Value == incomingWord);
+                var dbWord = dbWordSet.FirstOrDefault(x => x.Value == incomingWord);
                 if (dbWord is null) continue;
 
                 //if it is tracked, attempt to create or update the seenFrom values.
@@ -39,7 +39,7 @@ namespace Thot.Api.Core.Services
                 dbWord.SeenTotal++;
             }
 
-            await _wordService.Update(serverId, dbWordSet.Words);
+            await _wordService.Update(serverId, dbWordSet);
             return;
         }
     }

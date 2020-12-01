@@ -6,7 +6,7 @@ namespace Thot.Api.Core.Interfaces
 {
     public interface IWordRepository
     {
-        Task<WordSet> Get(ulong guildId);
+        Task<List<Word>> Get(ulong guildId, ulong authorId = 0, int pagesToSkip = 0);
         Task<string> Add(ulong guildId, List<string> toAdd);
         Task<string> Remove(ulong guildId, List<string> toDelete);
         Task Update(ulong guildId, List<Word> toUpdate);

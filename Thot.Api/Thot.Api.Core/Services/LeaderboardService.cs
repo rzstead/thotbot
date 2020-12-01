@@ -14,9 +14,9 @@ namespace Thot.Api.Core.Services
             _wordService = wordService;
         }
 
-        public async Task<WordSet> Top(ulong serverId, ulong authorId)
+        public async Task<List<Word>> Top(ulong serverId, ulong authorId, int pagesToSkip = 0)
         {
-            return await _wordService.Get(serverId);
+            return await _wordService.Get(serverId, authorId, pagesToSkip);
         }
     }
 }

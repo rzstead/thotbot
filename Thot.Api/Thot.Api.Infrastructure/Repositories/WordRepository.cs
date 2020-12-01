@@ -12,6 +12,7 @@ namespace Thot.Api.Infrastructure.Repositories
     public class WordRepository : IWordRepository
     {
         private readonly IMongoCollection<WordSet> _words;
+        private const int ROWS_PER_PAGE = 9;
         public WordRepository(IWordDatabaseSettings settings)
         {
             var client = new MongoClient(settings.ConnectionString);
@@ -20,9 +21,20 @@ namespace Thot.Api.Infrastructure.Repositories
             _words = database.GetCollection<WordSet>(settings.WordCollectionName);
         }
 
-        public async Task<WordSet> Get(ulong guildId)
+        public async Task<List<Word>> Get(ulong guildId, ulong authorId = 0, int pagesToSkip = 0)
         {
-            return await _words.Find<WordSet>(word => word.ServerId == guildId).FirstOrDefaultAsync();
+            var serverWordSet = await _words.Find(x => x.ServerId == guildId).FirstOrDefaultAsync();
+            var localWordSet = serverWordSet.Words;
+
+            if (serverWordSet is null) return new List<Word>();
+
+            if (authorId > 0)
+            {
+                localWordSet = serverWordSet.Words.Where(x => x.SeenFrom.Any(x => x.UserId == authorId)).ToList();
+            }
+
+            localWordSet = localWordSet.Skip(pagesToSkip * ROWS_PER_PAGE).Take(ROWS_PER_PAGE).ToList();
+            return localWordSet;
         }
 
         public async Task<string> Add(ulong guildId, List<string> toAdd)
@@ -40,15 +52,15 @@ namespace Thot.Api.Infrastructure.Repositories
             }
             else
             {
-                var existingWords = existingSet.Words.Select(x => x.Value);
+                var existingWords = existingSet.Select(x => x.Value);
                 var duplicateWords = toAdd.Intersect(existingWords).ToList();
 
                 var additionalSet = toAdd.Where(wordToAdd => !existingWords.Contains(wordToAdd))
                 .Select(x => new Word() { Value = x });
 
-                existingSet.Words.AddRange(additionalSet);
+                existingSet.AddRange(additionalSet);
 
-                await Update(guildId, existingSet.Words);
+                await Update(guildId, existingSet);
 
                 if (duplicateWords.Any())
                 {
@@ -67,15 +79,15 @@ namespace Thot.Api.Infrastructure.Repositories
                 return "There's nothing to delete.";
             }
 
-            var nonExistentWords = toDelete.Where(word => !existingSet.Words.Select(x => x.Value).Contains(word)).ToList();
+            var nonExistentWords = toDelete.Where(word => !existingSet.Select(x => x.Value).Contains(word)).ToList();
             System.Console.WriteLine(string.Join(',', nonExistentWords));
             foreach (var word in toDelete)
             {
-                var wordToRemove = existingSet.Words.Find(x => x.Value == word);
-                existingSet.Words.Remove(wordToRemove);
+                var wordToRemove = existingSet.Find(x => x.Value == word);
+                existingSet.Remove(wordToRemove);
             }
 
-            await Update(guildId, existingSet.Words);
+            await Update(guildId, existingSet);
 
             if (nonExistentWords.Any())
             {
@@ -98,18 +110,18 @@ namespace Thot.Api.Infrastructure.Repositories
         {
             var existingSet = await Get(guildId);
 
-            if (existingSet is null || !existingSet.Words.Any())
+            if (existingSet is null || !existingSet.Any())
             {
                 return "No words tracked to be reset.";
             }
 
-            existingSet.Words.ForEach(word =>
+            existingSet.ForEach(word =>
             {
                 word.SeenFrom = new List<SeenFrom>();
                 word.SeenTotal = 0;
             });
 
-            await Update(guildId, existingSet.Words);
+            await Update(guildId, existingSet);
             return "";
         }
     }

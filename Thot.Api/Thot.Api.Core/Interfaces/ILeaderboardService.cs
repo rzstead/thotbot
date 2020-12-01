@@ -6,6 +6,6 @@ namespace Thot.Api.Core.Interfaces
 {
     public interface ILeaderboardService
     {
-        Task<WordSet> Top(ulong serverId, ulong authorId);
+        Task<List<Word>> Top(ulong serverId, ulong authorId, int pagesToSkip = 0);
     }
 }

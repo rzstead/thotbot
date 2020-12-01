@@ -12,7 +12,6 @@ namespace Thot.Api.Controllers
         private readonly ILogger<WordController> _logger;
 
         private readonly IWordService _wordService;
-        private const int PAGE_SIZE = 9;
 
         public WordController(IWordService wordService, ILogger<WordController> logger)
         {
@@ -34,9 +33,8 @@ namespace Thot.Api.Controllers
 
         public override async Task<ListResponse> List(ListRequest request, ServerCallContext context)
         {
-            var pagesToSkip = request.PagesToSkip * PAGE_SIZE;
-            var wordSet = await _wordService.Get(request.ServerId);
-            var words = wordSet.Words.OrderByDescending(x => x.SeenTotal).Skip(pagesToSkip).Take(PAGE_SIZE).ToList();
+            var wordSet = await _wordService.Get(request.ServerId, 0, request.PagesToSkip);
+            var words = wordSet.OrderByDescending(x => x.SeenTotal).ToList();
             var response = new ListResponse();
 
             if (wordSet is null)

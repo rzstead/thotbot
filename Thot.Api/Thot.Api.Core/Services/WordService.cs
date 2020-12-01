@@ -17,9 +17,9 @@ namespace Thot.Api.Core.Services
             return await _wordRepo.Add(guildId, toAdd);
         }
 
-        public async Task<WordSet> Get(ulong guildId)
+        public async Task<List<Word>> Get(ulong guildId, ulong authorId = 0, int pagesToSkip = 0)
         {
-            return await _wordRepo.Get(guildId);
+            return await _wordRepo.Get(guildId, authorId, pagesToSkip);
         }
 
         public async Task<string> Remove(ulong guildId, List<string> toDelete)
