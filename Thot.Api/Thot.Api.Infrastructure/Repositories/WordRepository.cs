@@ -33,7 +33,7 @@ namespace Thot.Api.Infrastructure.Repositories
                 localWordSet = serverWordSet.Words.Where(x => x.SeenFrom.Any(x => x.UserId == authorId)).ToList();
             }
 
-            localWordSet = localWordSet.Skip(pagesToSkip * ROWS_PER_PAGE).Take(ROWS_PER_PAGE).ToList();
+            localWordSet = localWordSet.OrderByDescending(x => x.SeenTotal).Skip(pagesToSkip * ROWS_PER_PAGE).Take(ROWS_PER_PAGE).ToList();
             return localWordSet;
         }
 
