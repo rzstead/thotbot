@@ -33,6 +33,7 @@ namespace Thot.Listener
             timer.Elapsed += Reboot;
             timer.AutoReset = true;
             timer.Enabled = true;
+            Reboot(null, null);
 
             // Block this task until the program is closed.
             await Task.Delay(-1);
