@@ -41,7 +41,7 @@ namespace Thot.Listener
 
         private async void Reboot(object sender, ElapsedEventArgs e)
         {
-            if (_discordClient.LoginState == LoginState.LoggedIn)
+            if (_discordClient.ConnectionState == ConnectionState.Connected)
             {
                 await _discordClient.StopAsync();
                 await _discordClient.LogoutAsync();
