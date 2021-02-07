@@ -16,8 +16,8 @@ namespace Thot.Listener
         private DiscordSocketClient _discordClient;
         private CommandHandler _commandHandler;
 
-        public static async Task Main(string[] args)
-            => await new Startup().MainAsync();
+        public static void Main(string[] args)
+            => new Startup().MainAsync().GetAwaiter().GetResult();
 
         public async Task MainAsync()
         {
@@ -28,29 +28,8 @@ namespace Thot.Listener
 
             _discordClient.Ready += RegisterDiscordEvents;
 
-            Timer timer = new Timer(60000 * REFRESH_TIMEOUT);
-
-            timer.Elapsed += Reboot;
-            timer.AutoReset = true;
-            timer.Enabled = true;
-            Reboot(null, null);
-
             // Block this task until the program is closed.
             await Task.Delay(-1);
-        }
-
-        private async void Reboot(object sender, ElapsedEventArgs e)
-        {
-            if (_discordClient.ConnectionState == ConnectionState.Connected)
-            {
-                await _discordClient.StopAsync();
-                await _discordClient.LogoutAsync();
-            }
-            else
-            {
-                await _discordClient.LoginAsync(TokenType.Bot, _config.DiscordToken);
-                await _discordClient.StartAsync();
-            }
         }
 
         private async Task RegisterDiscordEvents()
