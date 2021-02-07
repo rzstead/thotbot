@@ -26,7 +26,10 @@ namespace Thot.Listener
             var services = new Initialize(_discordClient).BuildServiceProvider();
             _commandHandler = (CommandHandler)services.GetService(typeof(CommandHandler));
 
+            await _discordClient.LoginAsync(TokenType.Bot, _config.DiscordToken);
+            await _discordClient.StartAsync();
             _discordClient.Ready += RegisterDiscordEvents;
+
 
             // Block this task until the program is closed.
             await Task.Delay(-1);
